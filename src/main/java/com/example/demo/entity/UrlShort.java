@@ -17,6 +17,6 @@ public class UrlShort {
 
     private String urlShort;
 
-    @OneToOne
-    private Url url;
+    @ManyToOne
+    private Url urlOriginal;
 }
