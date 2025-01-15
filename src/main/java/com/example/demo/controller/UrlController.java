@@ -1,8 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.TO.UrlRankingTO;
-import com.example.demo.TO.UrlRequestTO;
-import com.example.demo.TO.UrlResponseTO;
+import com.example.demo.TO.*;
 import com.example.demo.entity.Url;
 import com.example.demo.service.UrlService;
 import org.springframework.beans.factory.annotation.Autowired;
