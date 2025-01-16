@@ -5,18 +5,22 @@ import lombok.*;
 
 @Entity
 @Table
-@Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class UrlShort {
     @Id
-    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String urlShort;
 
     @ManyToOne
     private Url urlOriginal;
+
+    public String getUrlShort() {
+        return urlShort;
+    }
 }
+
