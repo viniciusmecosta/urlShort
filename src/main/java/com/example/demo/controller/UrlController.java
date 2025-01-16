@@ -21,8 +21,8 @@ public class UrlController {
         return ResponseEntity.ok(urlService.shortenUrl(urlOriginal));
     }
 
-    @GetMapping(value = "find/{urlShort}")
-    public ResponseEntity<Url> find(@PathVariable String urlShort) {
+    @GetMapping(value = "find")
+    public ResponseEntity<UrlRequestTO> find(@RequestBody String urlShort) {
 
         return null;
     }
