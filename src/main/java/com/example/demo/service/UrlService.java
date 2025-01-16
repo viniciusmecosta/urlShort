@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.TO.*;
+import com.example.demo.entity.Url;
 import com.example.demo.entity.UrlShort;
 import com.example.demo.entity.UrlView;
 import com.example.demo.repository.*;
@@ -16,22 +17,33 @@ public class UrlService {
     @Autowired
     private UrlRepository urlRepository;
 
+    @Autowired
     private UrlShortRepository urlShortRepository;
-
-    private UrlShort urlShort;
-
-    private UrlResponseTO urlResponseTO;
 
     @Autowired
     private UrlViewRepository urlViewRepository;
 
     public UrlResponseTO shortenUrl(UrlRequestTO urlRequestTO) {
+        String originalUrl = urlRequestTO.getUrlOriginal();
 
-        return urlResponseTO;
+        Url existingUrl = urlRepository.findByUrlOriginal(originalUrl);
+
+        if (existingUrl != null) {
+            UrlShort existingShort = urlShortRepository.findByUrlOriginal(existingUrl);
+            if (existingShort != null) {
+                return new UrlResponseTO(existingUrl.getUrlOriginal(), existingShort.getUrlShort());
+            }
+        }
+
+        Url newUrl = existingUrl != null ? existingUrl : urlRepository.save(new Url( originalUrl));
+        String shortUrl = generateShortUrl(originalUrl);
+
+
+        return new UrlResponseTO(newUrl.getUrlOriginal(), shortUrl);
     }
 
-    public List<UrlRankingTO> rankingUrl() {
 
+    public List<UrlRankingTO> rankingUrl() {
         List<UrlView> urlViewList = urlViewRepository.findAll();
 
         Map<String, Long> urlCountMap = urlViewList.stream()
@@ -45,5 +57,8 @@ public class UrlService {
 
         return new ArrayList<>(top10Urls);
     }
-}
 
+    private String generateShortUrl(String originalUrl) {
+        return UUID.randomUUID().toString().substring(0, 6);
+    }
+}

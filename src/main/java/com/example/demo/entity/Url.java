@@ -5,16 +5,23 @@ import lombok.*;
 
 @Entity
 @Table
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Getter
-@Setter
 public class Url {
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String urlOriginal;
 
+    public Url(String originalUrl) {
+        this.urlOriginal = originalUrl;
+    }
+
+
+    public String getUrlOriginal() {
+        return urlOriginal;
+    }
 }
