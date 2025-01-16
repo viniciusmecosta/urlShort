@@ -32,9 +32,7 @@ public class UrlService {
 
         if (existingUrl != null) {
             UrlShort existingShort = urlShortRepository.findByUrlOriginal(existingUrl);
-            if (existingShort != null) {
-                return new UrlResponseTO(existingShort.getUrlShort(), existingUrl.getUrlOriginal());
-            }
+            return new UrlResponseTO(existingShort.getUrlShort(), existingUrl.getUrlOriginal());
         }
 
         String shortUrl = generateShortUrl(urlRequestTO);
