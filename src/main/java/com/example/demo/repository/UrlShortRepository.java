@@ -6,4 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UrlShortRepository extends JpaRepository<UrlShort, Long> {
     UrlShort findByUrlOriginal(Url urlOriginal);
+    boolean existsByUrlShort(Url urlShort);
 }
