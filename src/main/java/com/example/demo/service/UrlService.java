@@ -8,6 +8,9 @@ import com.example.demo.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -23,23 +26,27 @@ public class UrlService {
     @Autowired
     private UrlViewRepository urlViewRepository;
 
-    public UrlResponseTO shortenUrl(UrlRequestTO urlRequestTO) {
-        String originalUrl = urlRequestTO.getUrlOriginal();
+    public UrlResponseTO shortenUrl(String urlRequestTO) {
 
-        Url existingUrl = urlRepository.findByUrlOriginal(originalUrl);
+        Url existingUrl = urlRepository.findByUrlOriginal(urlRequestTO);
 
         if (existingUrl != null) {
             UrlShort existingShort = urlShortRepository.findByUrlOriginal(existingUrl);
             if (existingShort != null) {
-                return new UrlResponseTO(existingUrl.getUrlOriginal(), existingShort.getUrlShort());
+                return new UrlResponseTO(existingShort.getUrlShort(), existingUrl.getUrlOriginal());
             }
         }
 
-        Url newUrl = existingUrl != null ? existingUrl : urlRepository.save(new Url( originalUrl));
-        String shortUrl = generateShortUrl(originalUrl);
+        String shortUrl = generateShortUrl(urlRequestTO);
 
+        Url url = new Url(urlRequestTO);
+        urlRepository.save(url);
 
-        return new UrlResponseTO(newUrl.getUrlOriginal(), shortUrl);
+        UrlShort urlShort = new UrlShort(shortUrl, url);
+        urlShortRepository.save(urlShort);
+
+        return new UrlResponseTO(urlRequestTO, shortUrl);
+
     }
 
 
@@ -58,7 +65,19 @@ public class UrlService {
         return new ArrayList<>(top10Urls);
     }
 
-    private String generateShortUrl(String originalUrl) {
-        return UUID.randomUUID().toString().substring(0, 6);
+    public String generateShortUrl(String originalUrl) {
+        String urlClear = originalUrl.replaceFirst("https?://", "");
+        String shortUrl = generateHash(urlClear).substring(0, 6);
+        return "https://" + shortUrl;
+    }
+
+    private String generateHash(String input) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
+            return Base64.getUrlEncoder().encodeToString(hash);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Error: ", e);
+        }
     }
 }

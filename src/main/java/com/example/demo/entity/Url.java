@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table
+@Table(name = "url")
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -12,16 +12,18 @@ import lombok.*;
 public class Url {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
 
     private String urlOriginal;
 
-    public Url(String originalUrl) {
-        this.urlOriginal = originalUrl;
+    public Url(String urlOriginal) {
+        this.urlOriginal = urlOriginal;
     }
-
 
     public String getUrlOriginal() {
         return urlOriginal;
+    }
+    public void setUrlOriginal(String urlOriginal) {
+        this.urlOriginal = urlOriginal;
     }
 }

@@ -15,10 +15,10 @@ public class UrlController {
     @Autowired
     private UrlService urlService;
 
-    @PostMapping(value = "create/{urlOriginal}")
-    public ResponseEntity<UrlResponseTO> create(@RequestBody UrlRequestTO urlRequestTO, @PathVariable String urlOriginal) {
+	@PostMapping(value = "create")
+    public ResponseEntity<UrlResponseTO> create(@RequestBody String urlOriginal) {
 
-        return ResponseEntity.ok(urlService.shortenUrl(urlRequestTO));
+        return ResponseEntity.ok(urlService.shortenUrl(urlOriginal));
     }
 
     @GetMapping(value = "find/{urlShort}")
