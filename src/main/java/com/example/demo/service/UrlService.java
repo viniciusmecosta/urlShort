@@ -87,5 +87,24 @@ public class UrlService {
             throw new IllegalArgumentException("Invalid URL : " + url);
         }
     }
+    public UrlResponseTO findOriginalUrl(String urlShort) {
+        if (urlShort == null || urlShort.isBlank()) {
+            throw new IllegalArgumentException("URL null");
+        }
+
+        UrlShort urlShortEntity = urlShortRepository.findByUrlShort(urlShort);
+        if (urlShortEntity == null) {
+            throw new IllegalArgumentException("URL not found: " + urlShort);
+        }
+
+        UrlView urlView = new UrlView(urlShortEntity.getUrlShort(),new Date().toString());
+
+        urlViewRepository.save(urlView);
+
+        return new UrlResponseTO(
+                urlShortEntity.getUrlOriginal().getUrlOriginal(),
+                urlShortEntity.getUrlShort()
+        );
+    }
 
 }

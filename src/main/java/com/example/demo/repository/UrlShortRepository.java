@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
 public interface UrlShortRepository extends JpaRepository<UrlShort, Long> {
     UrlShort findByUrlOriginal(Url urlOriginal);
     boolean existsByUrlShort(Url urlShort);
+
+    UrlShort findByUrlShort(String urlShort);
 }
