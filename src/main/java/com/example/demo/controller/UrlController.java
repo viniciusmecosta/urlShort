@@ -22,7 +22,7 @@ public class UrlController {
     }
 
     @GetMapping(value = "find")
-    public ResponseEntity<UrlRequestTO> find(@RequestBody String urlShort) {
+    public ResponseEntity<UrlResponseTO> find(@RequestBody String urlShort) {
 
         return null;
     }

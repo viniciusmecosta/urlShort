@@ -4,8 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "url")
+@Table(name = "url", uniqueConstraints = @UniqueConstraint(columnNames = "urlOriginal"))
 @Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -14,7 +15,11 @@ public class Url {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @Column(unique = true, nullable = false)
     private String urlOriginal;
+
+    public Url() {
+    }
 
     public Url(String urlOriginal) {
         this.urlOriginal = urlOriginal;

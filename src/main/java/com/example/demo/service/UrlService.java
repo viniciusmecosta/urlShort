@@ -5,7 +5,6 @@ import com.example.demo.entity.Url;
 import com.example.demo.entity.UrlShort;
 import com.example.demo.entity.UrlView;
 import com.example.demo.repository.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
@@ -17,22 +16,25 @@ import java.util.stream.Collectors;
 @Service
 public class UrlService {
 
-    @Autowired
-    private UrlRepository urlRepository;
+    private final UrlRepository urlRepository;
+    private final UrlShortRepository urlShortRepository;
+    private final UrlViewRepository urlViewRepository;
 
-    @Autowired
-    private UrlShortRepository urlShortRepository;
-
-    @Autowired
-    private UrlViewRepository urlViewRepository;
+    public UrlService(UrlRepository urlRepository, UrlShortRepository urlShortRepository, UrlViewRepository urlViewRepository) {
+        this.urlRepository = urlRepository;
+        this.urlShortRepository = urlShortRepository;
+        this.urlViewRepository = urlViewRepository;
+    }
 
     public UrlResponseTO shortenUrl(String urlRequestTO) {
+        validateUrl(urlRequestTO);
 
-        Url existingUrl = urlRepository.findByUrlOriginal(urlRequestTO);
+        UrlShort existingShort = urlShortRepository.findByUrlOriginal(
+                urlRepository.findByUrlOriginal(urlRequestTO)
+        );
 
-        if (existingUrl != null) {
-            UrlShort existingShort = urlShortRepository.findByUrlOriginal(existingUrl);
-            return new UrlResponseTO(existingShort.getUrlShort(), existingUrl.getUrlOriginal());
+        if (existingShort != null) {
+            return new UrlResponseTO(existingShort.getUrlOriginal().getUrlOriginal(), existingShort.getUrlShort());
         }
 
         String shortUrl = generateShortUrl(urlRequestTO);
@@ -43,10 +45,8 @@ public class UrlService {
         UrlShort urlShort = new UrlShort(shortUrl, url);
         urlShortRepository.save(urlShort);
 
-        return new UrlResponseTO(urlRequestTO, shortUrl);
-
+        return new UrlResponseTO(url.getUrlOriginal(), shortUrl);
     }
-
 
     public List<UrlRankingTO> rankingUrl() {
         List<UrlView> urlViewList = urlViewRepository.findAll();
@@ -64,9 +64,9 @@ public class UrlService {
     }
 
     public String generateShortUrl(String originalUrl) {
-        String urlClear = originalUrl.replaceFirst("https?://", "");
-        String shortUrl = generateHash(urlClear).substring(0, 6);
-        return "https://" + shortUrl;
+        String urlClear = originalUrl.replaceFirst("https?://", "").toLowerCase();
+        String shortUrl = generateHash(urlClear.toLowerCase()).substring(0, 6);
+        return "https://" + shortUrl.toLowerCase();
     }
 
     private String generateHash(String input) {
@@ -78,4 +78,14 @@ public class UrlService {
             throw new RuntimeException("Error: ", e);
         }
     }
+
+    private void validateUrl(String url) {
+        if (url == null || url.isBlank()) {
+            throw new IllegalArgumentException("URL null");
+        }
+        if (!url.matches("(https?://)?(www\\.)?.+\\..+")) {
+            throw new IllegalArgumentException("Invalid URL : " + url);
+        }
+    }
+
 }
