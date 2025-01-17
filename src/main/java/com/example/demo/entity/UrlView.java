@@ -19,6 +19,11 @@ public class UrlView {
 
     private String date;
 
+    public UrlView(String urlShort, String string) {
+        this.url = urlShort;
+        this.date = string;
+    }
+
     public String getUrl() {
         return url;
     }

@@ -23,9 +23,9 @@ public class UrlController {
 
     @GetMapping(value = "find")
     public ResponseEntity<UrlResponseTO> find(@RequestBody String urlShort) {
-
-        return null;
+        return ResponseEntity.ok(urlService.findOriginalUrl(urlShort));
     }
+
 
     @GetMapping(value = "ranking")
     public ResponseEntity<List<UrlRankingTO>> ranking() {
