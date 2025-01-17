@@ -1,6 +1,6 @@
 package com.example.demo.service;
 
-import com.example.demo.TO.*;
+import com.example.demo.to.*;
 import com.example.demo.entity.Url;
 import com.example.demo.entity.UrlShort;
 import com.example.demo.entity.UrlView;
@@ -26,26 +26,24 @@ public class UrlService {
         this.urlViewRepository = urlViewRepository;
     }
 
-    public UrlResponseTO shortenUrl(String urlRequestTO) {
-        validateUrl(urlRequestTO);
+    public UrlResponseTO shortenUrl(String urlReceived) {
+        validateUrl(urlReceived);
 
-        UrlShort existingShort = urlShortRepository.findByUrlOriginal(
-                urlRepository.findByUrlOriginal(urlRequestTO)
-        );
+        UrlShort existingShort = urlShortRepository.findByUrlOriginal(urlRepository.findByUrlOriginal(urlReceived));
 
         if (existingShort != null) {
             return new UrlResponseTO(existingShort.getUrlOriginal().getUrlOriginal(), existingShort.getUrlShort());
         }
 
-        String shortUrl = generateShortUrl(urlRequestTO);
+        String urlGenerated = generateShortUrl(urlReceived);
 
-        Url url = new Url(urlRequestTO);
-        urlRepository.save(url);
+        Url urlNew = new Url(urlReceived);
+        urlRepository.save(urlNew);
 
-        UrlShort urlShort = new UrlShort(shortUrl, url);
+        UrlShort urlShort = new UrlShort(urlGenerated, urlNew);
         urlShortRepository.save(urlShort);
 
-        return new UrlResponseTO(url.getUrlOriginal(), shortUrl);
+        return new UrlResponseTO(urlNew.getUrlOriginal(), urlGenerated);
     }
 
     public List<UrlRankingTO> rankingUrl() {
@@ -64,9 +62,8 @@ public class UrlService {
     }
 
     public String generateShortUrl(String originalUrl) {
-        String urlClear = originalUrl.replaceFirst("https?://", "").toLowerCase();
-        String shortUrl = generateHash(urlClear.toLowerCase()).substring(0, 6);
-        return "https://" + shortUrl.toLowerCase();
+        String shortUrl = generateHash(originalUrl.toLowerCase()).substring(0, 6);
+        return "https://" + shortUrl.toLowerCase() + ".com";
     }
 
     private String generateHash(String input) {
@@ -83,28 +80,25 @@ public class UrlService {
         if (url == null || url.isBlank()) {
             throw new IllegalArgumentException("URL null");
         }
-        if (!url.matches("(https?://)?(www\\.)?.+\\..+")) {
+        if (!url.matches(".+\\..+")) {
             throw new IllegalArgumentException("Invalid URL : " + url);
         }
     }
+
     public UrlResponseTO findOriginalUrl(String urlShort) {
-        if (urlShort == null || urlShort.isBlank()) {
-            throw new IllegalArgumentException("URL null");
-        }
+        validateUrl(urlShort);
 
         UrlShort urlShortEntity = urlShortRepository.findByUrlShort(urlShort);
         if (urlShortEntity == null) {
-            throw new IllegalArgumentException("URL not found: " + urlShort);
+            return null;
         }
 
         UrlView urlView = new UrlView(urlShortEntity.getUrlShort(),new Date().toString());
 
         urlViewRepository.save(urlView);
 
-        return new UrlResponseTO(
-                urlShortEntity.getUrlOriginal().getUrlOriginal(),
-                urlShortEntity.getUrlShort()
-        );
+        return new UrlResponseTO(urlShortEntity.getUrlOriginal().getUrlOriginal(),urlShortEntity.getUrlShort());
     }
 
 }
+

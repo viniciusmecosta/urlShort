@@ -1,12 +1,7 @@
-package com.example.demo.TO;
+package com.example.demo.to;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
 public class UrlRankingTO {
     @JsonProperty("url")
     private String url;

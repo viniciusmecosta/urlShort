@@ -4,11 +4,10 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table
+@Table(name = "urlview")
 @Getter
 @Setter
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 public class UrlView {
     @Id
@@ -18,6 +17,8 @@ public class UrlView {
     private String url;
 
     private String date;
+
+    public UrlView(){}
 
     public UrlView(String urlShort, String string) {
         this.url = urlShort;
