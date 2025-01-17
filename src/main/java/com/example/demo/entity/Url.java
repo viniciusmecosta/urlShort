@@ -7,7 +7,6 @@ import lombok.*;
 @Table(name = "url", uniqueConstraints = @UniqueConstraint(columnNames = "urlOriginal"))
 @Setter
 @Getter
-@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class Url {
@@ -26,9 +25,12 @@ public class Url {
     }
 
     public String getUrlOriginal() {
+
         return urlOriginal;
     }
+
     public void setUrlOriginal(String urlOriginal) {
+
         this.urlOriginal = urlOriginal;
     }
 }

@@ -1,13 +1,5 @@
-package com.example.demo.TO;
+package com.example.demo.to;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-
-@Getter
-@Setter
-@NoArgsConstructor
 public class UrlResponseTO {
     private String urlOriginal;
     private String urlShort;
@@ -16,17 +8,21 @@ public class UrlResponseTO {
         this.urlOriginal = urlOriginal;
         this.urlShort = urlShort;
     }
-
     public String getUrlOriginal() {
+
         return urlOriginal;
     }
     public void setUrlOriginal(String urlOriginal) {
+
         this.urlOriginal = urlOriginal;
     }
     public String getUrlShort() {
+
         return urlShort;
     }
     public void setUrlShort(String urlShort) {
+
         this.urlShort = urlShort;
     }
+
 }

@@ -23,7 +23,11 @@ public class UrlShort {
         this.urlShort = shortUrl;
         this.urlOriginal = url;
     }
-    public UrlShort() {}
+
+    public UrlShort() {
+
+    }
+
     public String getUrlShort() {
         return urlShort;
     }
