@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.exception.UrlInvalidException;
 import com.example.demo.exception.UrlNullException;
 import com.example.demo.to.*;
 import com.example.demo.entity.Url;
@@ -84,7 +85,7 @@ public class UrlService {
             throw new UrlNullException("URL null");
         }
         if (!url.matches(".+\\..+")) {
-            throw new UrlNullException("Invalid URL : " + url);
+            throw new UrlInvalidException("Invalid URL : " + url);
         }
     }
 
