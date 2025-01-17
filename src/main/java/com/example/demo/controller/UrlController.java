@@ -15,7 +15,7 @@ public class UrlController {
     @Autowired
     private UrlService urlService;
 
-	@PostMapping(value = "create")
+    @PostMapping(value = "create")
     public ResponseEntity<UrlResponseTO> create(@RequestBody String urlReceived) {
         return ResponseEntity.ok(urlService.shortenUrl(urlReceived));
     }
@@ -29,16 +29,5 @@ public class UrlController {
     public ResponseEntity<List<UrlRankingTO>> ranking() {
         return ResponseEntity.ok(urlService.rankingUrl());
 
-    }
-
-    @ControllerAdvice
-    public static class HandlerErrorController {
-
-        @ExceptionHandler(Exception.class)
-        @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-        @ResponseBody
-        public String handleException(Exception ex) {
-            return ex.getMessage();
-        }
     }
 }
