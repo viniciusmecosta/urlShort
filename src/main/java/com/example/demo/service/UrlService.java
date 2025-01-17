@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.exception.UrlNullException;
 import com.example.demo.to.*;
 import com.example.demo.entity.Url;
 import com.example.demo.entity.UrlShort;
@@ -57,7 +58,9 @@ public class UrlService {
                 .limit(10)
                 .map(entry -> new UrlRankingTO(entry.getKey(), entry.getValue().intValue()))
                 .toList();
-
+		if (top10Urls.isEmpty()) {
+            throw new IllegalArgumentException("0 urlView");
+        }
         return new ArrayList<>(top10Urls);
     }
 
@@ -78,10 +81,10 @@ public class UrlService {
 
     private void validateUrl(String url) {
         if (url == null || url.isBlank()) {
-            throw new IllegalArgumentException("URL null");
+            throw new UrlNullException("URL null");
         }
         if (!url.matches(".+\\..+")) {
-            throw new IllegalArgumentException("Invalid URL : " + url);
+            throw new UrlNullException("Invalid URL : " + url);
         }
     }
 
@@ -90,7 +93,7 @@ public class UrlService {
 
         UrlShort urlShortEntity = urlShortRepository.findByUrlShort(urlShort);
         if (urlShortEntity == null) {
-            return null;
+            throw new IllegalArgumentException("Url not found");
         }
 
         UrlView urlView = new UrlView(urlShortEntity.getUrlShort(),new Date().toString());
