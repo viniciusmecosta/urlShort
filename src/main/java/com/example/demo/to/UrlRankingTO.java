@@ -13,4 +13,11 @@ public class UrlRankingTO {
         this.url = url;
         this.count = count;
     }
+
+    public String getUrl() {
+        return this.url;
+    }
+    public int getCount() {
+        return this.count;
+    }
 }

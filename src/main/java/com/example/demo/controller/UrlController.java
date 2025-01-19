@@ -16,14 +16,14 @@ public class UrlController {
     @Autowired
     private UrlService urlService;
 
-    @PostMapping("create/{url}")
-    public ResponseEntity<UrlResponseTO> create(@PathVariable String url) {
+    @PostMapping("create")
+    public ResponseEntity<UrlResponseTO> create(@RequestParam String url) {
         return ResponseEntity.status(HttpStatus.CREATED).body(urlService.shortenUrl(url));
     }
 
-    @GetMapping("find/{shortUrl}")
-    public ResponseEntity<Void> find(@PathVariable String shortUrl) {
-        String urlOriginal = urlService.find(shortUrl);
+    @GetMapping("find")
+    public ResponseEntity<Void> find(@RequestParam String url) {
+        String urlOriginal = urlService.find(url);
         return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(urlOriginal)) .build();
     }
 
