@@ -17,11 +17,15 @@ public class Url {
     @Column(unique = true, nullable = false)
     private String urlOriginal;
 
+    @Column(unique = true, nullable = false)
+    private String urlShort;
+
     public Url() {
     }
 
-    public Url(String urlOriginal) {
-        this.urlOriginal = urlOriginal;
+    public Url(String urlReceived, String urlGenerated) {
+        this.urlOriginal = urlGenerated;
+        this.urlShort = urlReceived;
     }
 
     public String getUrlOriginal() {
@@ -29,8 +33,12 @@ public class Url {
         return urlOriginal;
     }
 
-    public void setUrlOriginal(String urlOriginal) {
-
+    public void setUrlOriginal(String urlOriginal, String urlShort) {
         this.urlOriginal = urlOriginal;
+        this.urlShort = urlShort;
+    }
+
+    public String getUrlShort() {
+        return urlShort;
     }
 }

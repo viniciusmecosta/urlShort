@@ -20,7 +20,7 @@ public class GlobalExceptionHandler {
     }
     @ExceptionHandler({NoUrlViewException.class})
     public ResponseEntity<String> handlerNoUrlViewException(NoUrlViewException e) {
-        return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body(e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 
     @ExceptionHandler({HashException.class})
@@ -32,6 +32,4 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handlerUrlNotFoundException(UrlNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
-
 }
-
