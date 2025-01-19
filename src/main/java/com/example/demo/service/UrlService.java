@@ -3,7 +3,6 @@ package com.example.demo.service;
 import com.example.demo.exception.*;
 import com.example.demo.to.*;
 import com.example.demo.entity.Url;
-import com.example.demo.entity.UrlShort;
 import com.example.demo.entity.UrlView;
 import com.example.demo.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,32 +18,24 @@ import java.util.stream.Collectors;
 public class UrlService {
 
     private final UrlRepository urlRepository;
-    private final UrlShortRepository urlShortRepository;
     private final UrlViewRepository urlViewRepository;
 
     @Autowired
-    public UrlService(UrlRepository urlRepository, UrlShortRepository urlShortRepository, UrlViewRepository urlViewRepository) {
+    public UrlService(UrlRepository urlRepository, UrlViewRepository urlViewRepository) {
         this.urlRepository = urlRepository;
-        this.urlShortRepository = urlShortRepository;
         this.urlViewRepository = urlViewRepository;
     }
 
     public UrlResponseTO shortenUrl(String urlReceived) {
         validateUrl(urlReceived);
-
-        UrlShort existingShort = urlShortRepository.findByUrlOriginal(urlRepository.findByUrlOriginal(urlReceived));
-
-        if (existingShort != null) {
-            return new UrlResponseTO(existingShort.getUrlOriginal().getUrlOriginal(), existingShort.getUrlShort());
+        Url existingUrl = urlRepository.findByUrlOriginal(urlReceived);
+        if (existingUrl != null) {
+            return new UrlResponseTO(existingUrl.getUrlOriginal(), existingUrl.getUrlShort());
         }
 
         String urlGenerated = generateShortUrl(urlReceived);
-
-        Url urlNew = new Url(urlReceived);
+        Url urlNew = new Url(urlGenerated, urlReceived);
         urlRepository.save(urlNew);
-
-        UrlShort urlShort = new UrlShort(urlGenerated, urlNew);
-        urlShortRepository.save(urlShort);
 
         return new UrlResponseTO(urlNew.getUrlOriginal(), urlGenerated);
     }
@@ -68,8 +59,8 @@ public class UrlService {
     }
 
     public String generateShortUrl(String originalUrl) {
-        String shortUrl = generateHash(originalUrl.toLowerCase()).substring(0, 6);
-        return "https://" + shortUrl.toLowerCase() + ".com";
+        String shortUrl = generateHash(originalUrl.toLowerCase() + System.currentTimeMillis()).substring(0, 6);
+        return shortUrl.toLowerCase();
     }
 
     private String generateHash(String input) {
@@ -91,20 +82,15 @@ public class UrlService {
         }
     }
 
-    public UrlResponseTO findOriginalUrl(String urlShort) {
-        validateUrl(urlShort);
-
-        UrlShort urlShortEntity = urlShortRepository.findByUrlShort(urlShort);
-        if (urlShortEntity == null) {
+    public String find(String urlShort) {
+        Url url = urlRepository.findByUrlShort(urlShort);
+        if (url.getUrlShort() == null) {
             throw new UrlNotFoundException("Url not found");
         }
 
-        UrlView urlView = new UrlView(urlShortEntity.getUrlShort(),new Date().toString());
-
+        UrlView urlView = new UrlView(url.getUrlShort(),new Date().toString());
         urlViewRepository.save(urlView);
 
-        return new UrlResponseTO(urlShortEntity.getUrlOriginal().getUrlOriginal(),urlShortEntity.getUrlShort());
+        return url.getUrlOriginal();
     }
-
 }
-
