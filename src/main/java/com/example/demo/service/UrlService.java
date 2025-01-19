@@ -1,12 +1,12 @@
 package com.example.demo.service;
 
-import com.example.demo.exception.UrlInvalidException;
-import com.example.demo.exception.UrlNullException;
+import com.example.demo.exception.*;
 import com.example.demo.to.*;
 import com.example.demo.entity.Url;
 import com.example.demo.entity.UrlShort;
 import com.example.demo.entity.UrlView;
 import com.example.demo.repository.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
@@ -22,6 +22,7 @@ public class UrlService {
     private final UrlShortRepository urlShortRepository;
     private final UrlViewRepository urlViewRepository;
 
+    @Autowired
     public UrlService(UrlRepository urlRepository, UrlShortRepository urlShortRepository, UrlViewRepository urlViewRepository) {
         this.urlRepository = urlRepository;
         this.urlShortRepository = urlShortRepository;
@@ -59,8 +60,9 @@ public class UrlService {
                 .limit(10)
                 .map(entry -> new UrlRankingTO(entry.getKey(), entry.getValue().intValue()))
                 .toList();
+
 		if (top10Urls.isEmpty()) {
-            throw new IllegalArgumentException("0 urlView");
+            throw new NoUrlViewException("0 urlView");
         }
         return new ArrayList<>(top10Urls);
     }
@@ -76,7 +78,7 @@ public class UrlService {
             byte[] hash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
             return Base64.getUrlEncoder().encodeToString(hash);
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Error: ", e);
+            throw new HashException("Hash Error" + e.toString());
         }
     }
 
@@ -94,7 +96,7 @@ public class UrlService {
 
         UrlShort urlShortEntity = urlShortRepository.findByUrlShort(urlShort);
         if (urlShortEntity == null) {
-            throw new IllegalArgumentException("Url not found");
+            throw new UrlNotFoundException("Url not found");
         }
 
         UrlView urlView = new UrlView(urlShortEntity.getUrlShort(),new Date().toString());
