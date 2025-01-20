@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.entity.Url;
 import com.example.demo.to.*;
 import com.example.demo.service.UrlService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ public class UrlController {
     private UrlService urlService;
 
     @PostMapping("create")
-    public ResponseEntity<UrlResponseTO> create(@RequestParam String url) {
+    public ResponseEntity<Url> create(@RequestParam String url) {
         return ResponseEntity.status(HttpStatus.CREATED).body(urlService.shortenUrl(url));
     }
 

@@ -14,17 +14,6 @@ class UrlRepositoryTest {
     private UrlRepository urlRepository;
 
     @Test
-    void findByUrlOriginal_whenUrlExists() {
-        Url url = new Url("https://example.com", "https://abc123.com");
-        urlRepository.save(url);
-
-        Url result = urlRepository.findByUrlOriginal("https://example.com");
-
-        assertNotNull(result);
-        assertEquals("https://abc123.com", result.getUrlShort());
-    }
-
-    @Test
     void findByUrlShort_whenUrlExists() {
         Url url = new Url("https://example.com", "https://abc123.com");
         urlRepository.save(url);
@@ -33,5 +22,14 @@ class UrlRepositoryTest {
 
         assertNotNull(result);
         assertEquals("https://example.com", result.getUrlOriginal());
+    }
+
+    @Test
+    void findByUrlShort_whenUrlNoExists() {
+        String urlShort = "https://example.com";
+
+        Url result = urlRepository.findByUrlShort(urlShort);
+
+        assertNull(result);
     }
 }

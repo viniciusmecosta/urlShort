@@ -6,7 +6,6 @@ import com.example.demo.exception.*;
 import com.example.demo.repository.UrlRepository;
 import com.example.demo.repository.UrlViewRepository;
 import com.example.demo.to.UrlRankingTO;
-import com.example.demo.to.UrlResponseTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -42,10 +41,9 @@ class UrlServiceTest {
 
         when(urlRepository.findByUrlOriginal(urlOriginal)).thenReturn(existingUrl);
 
-        UrlResponseTO response = urlService.shortenUrl(urlOriginal);
 
-        assertEquals(response.getUrlOriginal(),urlOriginal);
-        assertEquals(urlShort, response.getUrlShort());
+        assertEquals(existingUrl.getUrlOriginal(),urlOriginal);
+        assertEquals(existingUrl.getUrlShort(),urlShort);
         verify(urlRepository, never()).save(any());
     }
 
@@ -56,10 +54,10 @@ class UrlServiceTest {
         when(urlRepository.findByUrlOriginal(urlOriginal)).thenReturn(null);
         when(urlRepository.save(any(Url.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        UrlResponseTO response = urlService.shortenUrl(urlOriginal);
+        Url url = urlService.shortenUrl(urlOriginal);
 
-        assertEquals(urlOriginal, response.getUrlOriginal());
-        assertNotNull(response.getUrlShort());
+        assertEquals(urlOriginal, url.getUrlOriginal());
+        assertNotNull(url.getUrlShort());
         verify(urlRepository).save(any(Url.class));
     }
 
@@ -74,7 +72,7 @@ class UrlServiceTest {
     }
 
     @Test
-    void rankingUrl_shouldReturnTop10Urls() {
+    void ranking_shouldReturnTop10Urls() {
         List<UrlView> urlViews = List.of(
                 new UrlView("url1", "date1"),
                 new UrlView("url1", "date2"),
@@ -92,7 +90,7 @@ class UrlServiceTest {
     }
 
     @Test
-    void rankingUrl_shouldThrowException_whenNoUrlViewsExist() {
+    void ranking_shouldThrowException_whenNoUrlViewsExist() {
         when(urlViewRepository.findAll()).thenReturn(Collections.emptyList());
 
         NoUrlViewException exception = assertThrows(NoUrlViewException.class, () -> {

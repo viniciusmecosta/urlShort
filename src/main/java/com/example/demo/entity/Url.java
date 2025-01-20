@@ -4,10 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "url", uniqueConstraints = @UniqueConstraint(columnNames = "urlOriginal"))
+@Table
 @Setter
 @Getter
-@AllArgsConstructor
 @Builder
 public class Url {
     @Id
@@ -31,6 +30,7 @@ public class Url {
     public String getUrlOriginal() {
         return urlOriginal;
     }
+
     public String getUrlShort() {
         return urlShort;
     }
