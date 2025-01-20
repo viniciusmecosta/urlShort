@@ -8,7 +8,6 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
-@AllArgsConstructor
 public class UrlView {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,15 +17,18 @@ public class UrlView {
 
     private String date;
 
-    public UrlView(){}
+    public UrlView() {
+    }
 
     public UrlView(String urlShort, String string) {
         this.url = urlShort;
         this.date = string;
     }
-    public String getUrl(){
+
+    public String getUrl() {
         return url;
     }
+
     public String getDate(){
         return date;
     }

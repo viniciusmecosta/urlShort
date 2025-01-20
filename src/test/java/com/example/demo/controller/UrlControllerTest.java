@@ -1,11 +1,11 @@
 package com.example.demo.controller;
 
+import com.example.demo.entity.Url;
 import com.example.demo.exception.NoUrlViewException;
 import com.example.demo.exception.UrlInvalidException;
 import com.example.demo.exception.UrlNotFoundException;
 import com.example.demo.exception.UrlNullException;
 import com.example.demo.to.UrlRankingTO;
-import com.example.demo.to.UrlResponseTO;
 import com.example.demo.service.UrlService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +33,9 @@ class UrlControllerTest {
     void create_Returns201WithShortenedUrl() throws Exception {
         String originalUrl = "https://example.com";
         String shortUrl = "https://abc123.com";
-        UrlResponseTO responseTO = new UrlResponseTO(originalUrl, shortUrl);
+        Url url = new Url(originalUrl, shortUrl);
 
-        when(urlService.shortenUrl(originalUrl)).thenReturn(responseTO);
+        when(urlService.shortenUrl(originalUrl)).thenReturn(url);
 
         mockMvc.perform(post("/api/create")
                         .param("url", originalUrl))
