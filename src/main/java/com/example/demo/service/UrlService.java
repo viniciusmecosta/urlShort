@@ -28,7 +28,7 @@ public class UrlService {
 
     public UrlResponseTO shortenUrl(String urlReceived) {
         validateUrl(urlReceived);
-        urlReceived = ensureHttps(urlReceived);
+        urlReceived = addHttps(urlReceived);
         Url existingUrl = urlRepository.findByUrlOriginal(urlReceived);
         if (existingUrl != null) {
             return new UrlResponseTO(existingUrl.getUrlOriginal(), existingUrl.getUrlShort());
@@ -43,7 +43,7 @@ public class UrlService {
 
     public String find(String urlShort) {
         validateUrl(urlShort);
-        ensureHttps(urlShort);
+        urlShort = addHttps(urlShort);
         Url url = urlRepository.findByUrlShort(urlShort);
         if (url == null) {
             throw new UrlNotFoundException("Url not found");
@@ -72,7 +72,10 @@ public class UrlService {
     }
 
     public String generateShortUrl(String originalUrl) {
-        String shortUrl = generateHash(originalUrl+ System.currentTimeMillis()).substring(0, 6);
+        String shortUrl;
+        do {
+            shortUrl = generateHash(originalUrl + UUID.randomUUID()).substring(0, 6);
+        } while (urlRepository.findByUrlShort(shortUrl) != null);
         return "https://" + shortUrl.toLowerCase() + ".com";
     }
 
@@ -82,7 +85,7 @@ public class UrlService {
             byte[] hash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
             return Base64.getUrlEncoder().encodeToString(hash);
         } catch (NoSuchAlgorithmException e) {
-            throw new HashException("Hash Error: " + e);
+            throw new HashException("Hash Error");
         }
     }
 
@@ -95,7 +98,7 @@ public class UrlService {
         }
     }
 
-    private String ensureHttps(String url) {
+    private String addHttps(String url) {
         if (!url.startsWith("http://") && !url.startsWith("https://")) {
             return "https://" + url;
         }
