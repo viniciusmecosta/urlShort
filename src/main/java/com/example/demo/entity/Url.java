@@ -23,21 +23,14 @@ public class Url {
     public Url() {
     }
 
-    public Url(String urlReceived, String urlGenerated) {
-        this.urlOriginal = urlGenerated;
-        this.urlShort = urlReceived;
-    }
-
-    public String getUrlOriginal() {
-
-        return urlOriginal;
-    }
-
-    public void setUrlOriginal(String urlOriginal, String urlShort) {
+    public Url(String urlOriginal, String urlShort) {
         this.urlOriginal = urlOriginal;
         this.urlShort = urlShort;
     }
 
+    public String getUrlOriginal() {
+        return urlOriginal;
+    }
     public String getUrlShort() {
         return urlShort;
     }

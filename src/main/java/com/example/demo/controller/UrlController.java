@@ -24,11 +24,11 @@ public class UrlController {
     @GetMapping("find")
     public ResponseEntity<Void> find(@RequestParam String url) {
         String urlOriginal = urlService.find(url);
-        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(urlOriginal)) .build();
+        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(urlOriginal)).build();
     }
 
     @GetMapping(value = "ranking")
     public ResponseEntity<List<UrlRankingTO>> ranking() {
-        return ResponseEntity.ok(urlService.rankingUrl());
+        return ResponseEntity.ok(urlService.ranking());
     }
 }
