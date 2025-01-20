@@ -30,7 +30,7 @@ class UrlControllerTest {
     private UrlService urlService;
 
     @Test
-    void create_shouldReturn201AndShortenedUrl_whenUrlIsValid() throws Exception {
+    void create_Returns201WithShortenedUrl() throws Exception {
         String originalUrl = "https://example.com";
         String shortUrl = "https://abc123.com";
         UrlResponseTO responseTO = new UrlResponseTO(originalUrl, shortUrl);
@@ -47,7 +47,7 @@ class UrlControllerTest {
     }
 
     @Test
-    void create_shouldReturn400WhenUrlIsNull() throws Exception {
+    void create_Returns412WhenUrlIsNull() throws Exception {
         String originalUrl = "";
 
         when(urlService.shortenUrl(originalUrl)).thenThrow(new UrlNullException("URL null"));
@@ -60,7 +60,7 @@ class UrlControllerTest {
     }
 
     @Test
-    void create_shouldReturn400WhenUrlIsInvalid() throws Exception {
+    void create_Returns400WhenUrlIsInvalid() throws Exception {
         String originalUrl = "urlinvalid";
 
         when(urlService.shortenUrl(originalUrl)).thenThrow(new UrlInvalidException("Invalid URL (Example: 'example.com' or 'https://example.com' or 'http://example.com')"));
@@ -73,7 +73,7 @@ class UrlControllerTest {
     }
 
     @Test
-    void find_shouldRedirectToOriginalUrl_whenShortUrlExists() throws Exception {
+    void find_Redirect() throws Exception {
         String shortUrl = "abc123";
         String originalUrl = "https://example.com";
 
@@ -88,10 +88,10 @@ class UrlControllerTest {
     }
 
     @Test
-    void find_shouldReturn404WhenUrlShortNoExist() throws Exception {
+    void find_Returns404WhenUrlNotFound() throws Exception {
         String shortUrl = "https://example.com";
 
-        when(urlService.find(shortUrl)).thenThrow (new UrlNotFoundException("Url not found"));
+        when(urlService.find(shortUrl)).thenThrow(new UrlNotFoundException("Url not found"));
 
         mockMvc.perform(get("/api/find")
                         .param("url", shortUrl))
@@ -100,10 +100,10 @@ class UrlControllerTest {
     }
 
     @Test
-    void find_shouldReturn400WhenUrlShortIsInvalid() throws Exception {
+    void find_Returns400WhenUrlIsInvalid() throws Exception {
         String shortUrl = "abc123";
 
-        when(urlService.find(shortUrl)).thenThrow (new UrlInvalidException("Invalid URL (Example: 'example.com' or 'https://example.com' or 'http://example.com'"));
+        when(urlService.find(shortUrl)).thenThrow(new UrlInvalidException("Invalid URL (Example: 'example.com' or 'https://example.com' or 'http://example.com')"));
 
         mockMvc.perform(get("/api/find")
                         .param("url", shortUrl))
@@ -112,7 +112,7 @@ class UrlControllerTest {
     }
 
     @Test
-    void ranking_shouldReturn200AndListOfUrls_whenExistUrlView() throws Exception {
+    void ranking_Returns200WithListOfUrls() throws Exception {
         List<UrlRankingTO> ranking = List.of(
                 new UrlRankingTO("https://example1.com", 5),
                 new UrlRankingTO("https://example2.com", 3)
@@ -129,10 +129,14 @@ class UrlControllerTest {
 
         verify(urlService).ranking();
     }
+
     @Test
-    void ranking_shouldReturn404AndListOfUrls_whenNoExistUrlView() throws Exception {
+    void ranking_Returns404WhenNoUrlsExist() throws Exception {
         when(urlService.ranking()).thenThrow(new NoUrlViewException("No URL view available"));
-        mockMvc.perform(get("/api/ranking")).andExpect(status().isNotFound());
+
+        mockMvc.perform(get("/api/ranking"))
+                .andExpect(status().isNotFound());
+
         verify(urlService).ranking();
     }
 }

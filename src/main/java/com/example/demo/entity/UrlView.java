@@ -27,4 +27,7 @@ public class UrlView {
     public String getUrl(){
         return url;
     }
+    public String getDate(){
+        return date;
+    }
 }
