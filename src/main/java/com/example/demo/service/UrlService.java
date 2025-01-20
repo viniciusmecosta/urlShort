@@ -28,19 +28,32 @@ public class UrlService {
 
     public UrlResponseTO shortenUrl(String urlReceived) {
         validateUrl(urlReceived);
+        urlReceived = ensureHttps(urlReceived);
         Url existingUrl = urlRepository.findByUrlOriginal(urlReceived);
         if (existingUrl != null) {
             return new UrlResponseTO(existingUrl.getUrlOriginal(), existingUrl.getUrlShort());
         }
 
         String urlGenerated = generateShortUrl(urlReceived);
-        Url urlNew = new Url(urlGenerated, urlReceived);
-        urlRepository.save(urlNew);
+        Url url = new Url(urlReceived,urlGenerated);
+        urlRepository.save(url);
 
-        return new UrlResponseTO(urlNew.getUrlOriginal(), urlGenerated);
+        return new UrlResponseTO(url.getUrlOriginal(), url.getUrlShort());
     }
 
-    public List<UrlRankingTO> rankingUrl() {
+    public String find(String urlShort) {
+        validateUrl(urlShort);
+        ensureHttps(urlShort);
+        Url url = urlRepository.findByUrlShort(urlShort);
+        if (url == null) {
+            throw new UrlNotFoundException("Url not found");
+        }
+        UrlView urlView = new UrlView(url.getUrlShort(),new Date().toString());
+        urlViewRepository.save(urlView);
+        return url.getUrlOriginal();
+    }
+
+    public List<UrlRankingTO> ranking() {
         List<UrlView> urlViewList = urlViewRepository.findAll();
 
         Map<String, Long> urlCountMap = urlViewList.stream()
@@ -53,14 +66,14 @@ public class UrlService {
                 .toList();
 
 		if (top10Urls.isEmpty()) {
-            throw new NoUrlViewException("0 urlView");
+            throw new NoUrlViewException("No url fetched");
         }
         return new ArrayList<>(top10Urls);
     }
 
     public String generateShortUrl(String originalUrl) {
-        String shortUrl = generateHash(originalUrl.toLowerCase() + System.currentTimeMillis()).substring(0, 6);
-        return shortUrl.toLowerCase();
+        String shortUrl = generateHash(originalUrl+ System.currentTimeMillis()).substring(0, 6);
+        return "https://" + shortUrl.toLowerCase() + ".com";
     }
 
     private String generateHash(String input) {
@@ -69,7 +82,7 @@ public class UrlService {
             byte[] hash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
             return Base64.getUrlEncoder().encodeToString(hash);
         } catch (NoSuchAlgorithmException e) {
-            throw new HashException("Hash Error" + e.toString());
+            throw new HashException("Hash Error: " + e.toString());
         }
     }
 
@@ -78,19 +91,14 @@ public class UrlService {
             throw new UrlNullException("URL null");
         }
         if (!url.matches(".+\\..+")) {
-            throw new UrlInvalidException("Invalid URL : " + url);
+            throw new UrlInvalidException("Invalid URL (Example: 'example.com' or 'https://example.com' or 'http://example.com')");
         }
     }
 
-    public String find(String urlShort) {
-        Url url = urlRepository.findByUrlShort(urlShort);
-        if (url.getUrlShort() == null) {
-            throw new UrlNotFoundException("Url not found");
+    private String ensureHttps(String url) {
+        if (!url.startsWith("http://") && !url.startsWith("https://")) {
+            return "https://" + url;
         }
-
-        UrlView urlView = new UrlView(url.getUrlShort(),new Date().toString());
-        urlViewRepository.save(urlView);
-
-        return url.getUrlOriginal();
+        return url;
     }
 }

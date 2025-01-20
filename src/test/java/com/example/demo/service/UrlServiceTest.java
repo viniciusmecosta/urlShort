@@ -37,14 +37,14 @@ class UrlServiceTest {
     @Test
     void shortenUrl_shouldReturnExistingUrl_whenUrlAlreadyExists() {
         String urlOriginal = "https://example.com";
-        String urlShort = "abc123";
-        Url existingUrl = new Url(urlShort, urlOriginal);
+        String urlShort = "https://abc123.com";
+        Url existingUrl = new Url(urlOriginal,urlShort);
 
         when(urlRepository.findByUrlOriginal(urlOriginal)).thenReturn(existingUrl);
 
         UrlResponseTO response = urlService.shortenUrl(urlOriginal);
 
-        assertEquals(urlOriginal, response.getUrlOriginal());
+        assertEquals(response.getUrlOriginal(),urlOriginal);
         assertEquals(urlShort, response.getUrlShort());
         verify(urlRepository, never()).save(any());
     }
@@ -52,7 +52,7 @@ class UrlServiceTest {
     @Test
     void shortenUrl_shouldGenerateNewUrl_whenUrlDoesNotExist() {
         String urlOriginal = "https://example.com";
-        String urlShort = "xyz789";
+        String urlShort = "https://xyz789.com";
 
         when(urlRepository.findByUrlOriginal(urlOriginal)).thenReturn(null);
         when(urlRepository.save(any(Url.class))).thenAnswer(invocation -> invocation.getArgument(0));
@@ -72,7 +72,7 @@ class UrlServiceTest {
             urlService.shortenUrl(invalidUrl);
         });
 
-        assertEquals("Invalid URL : invalid-url", exception.getMessage());
+        assertEquals("Invalid URL (Example: 'example.com' or 'https://example.com' or 'http://example.com')", exception.getMessage());
     }
 
     @Test
@@ -86,7 +86,7 @@ class UrlServiceTest {
 
         when(urlViewRepository.findAll()).thenReturn(urlViews);
 
-        List<UrlRankingTO> ranking = urlService.rankingUrl();
+        List<UrlRankingTO> ranking = urlService.ranking();
 
         assertEquals(3, ranking.size());
         assertEquals("url1", ranking.get(0).getUrl());
@@ -98,17 +98,17 @@ class UrlServiceTest {
         when(urlViewRepository.findAll()).thenReturn(Collections.emptyList());
 
         NoUrlViewException exception = assertThrows(NoUrlViewException.class, () -> {
-            urlService.rankingUrl();
+            urlService.ranking();
         });
 
-        assertEquals("0 urlView", exception.getMessage());
+        assertEquals("No url fetched", exception.getMessage());
     }
 
     @Test
     void find_shouldReturnOriginalUrl_whenShortUrlExists() {
-        String urlShort = "abc123";
+        String urlShort = "https:abc123.com";
         String urlOriginal = "https://example.com";
-        Url url = new Url(urlShort, urlOriginal);
+        Url url = new Url(urlOriginal, urlShort);
 
         when(urlRepository.findByUrlShort(urlShort)).thenReturn(url);
 
@@ -120,7 +120,7 @@ class UrlServiceTest {
 
     @Test
     void find_shouldThrowException_whenShortUrlDoesNotExist() {
-        String urlShort = "nonexistent";
+        String urlShort = "nonexistent.com";
 
         when(urlRepository.findByUrlShort(urlShort)).thenReturn(null);
 

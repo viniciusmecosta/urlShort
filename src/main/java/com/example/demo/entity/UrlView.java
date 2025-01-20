@@ -24,8 +24,7 @@ public class UrlView {
         this.url = urlShort;
         this.date = string;
     }
-
-    public String getUrl() {
+    public String getUrl(){
         return url;
     }
 }
