@@ -82,7 +82,7 @@ public class UrlService {
             byte[] hash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
             return Base64.getUrlEncoder().encodeToString(hash);
         } catch (NoSuchAlgorithmException e) {
-            throw new HashException("Hash Error: " + e.toString());
+            throw new HashException("Hash Error: " + e);
         }
     }
 
