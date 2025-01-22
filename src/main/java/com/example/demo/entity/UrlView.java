@@ -1,13 +1,9 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
 
 @Entity
 @Table(name = "urlview")
-@Getter
-@Setter
-@Builder
 public class UrlView {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
