@@ -113,9 +113,11 @@ class UrlControllerTest {
 
     @Test
     void ranking_Returns200WithListOfUrls() throws Exception {
+        Long count1 = 5L;
+        Long count2 = 3L;
         List<UrlRankingTO> ranking = List.of(
-                new UrlRankingTO("https://example1.com", 5),
-                new UrlRankingTO("https://example2.com", 3)
+                new UrlRankingTO("https://example1.com", count1),
+                new UrlRankingTO("https://example2.com", count2)
         );
 
         when(urlService.ranking()).thenReturn(ranking);
@@ -123,9 +125,9 @@ class UrlControllerTest {
         mockMvc.perform(get("/api/ranking"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].url").value("https://example1.com"))
-                .andExpect(jsonPath("$[0].count").value(5))
+                .andExpect(jsonPath("$[0].count").value(count1))
                 .andExpect(jsonPath("$[1].url").value("https://example2.com"))
-                .andExpect(jsonPath("$[1].count").value(3));
+                .andExpect(jsonPath("$[1].count").value(count2));
 
         verify(urlService).ranking();
     }

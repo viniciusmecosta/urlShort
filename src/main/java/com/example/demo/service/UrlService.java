@@ -12,11 +12,11 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class UrlService {
-
+    private final String https = "https://";
+    private final String http = "http://";
     private final UrlRepository urlRepository;
     private final UrlViewRepository urlViewRepository;
 
@@ -54,32 +54,23 @@ public class UrlService {
     }
 
     public List<UrlRankingTO> ranking() {
-        List<UrlView> urlViewList = urlViewRepository.findAll();
+        List<UrlRankingTO> urlRankingTOs = urlViewRepository.findRankingUrlView();
 
-        Map<String, Long> urlCountMap = urlViewList.stream()
-                .collect(Collectors.groupingBy(UrlView::getUrl, Collectors.counting()));
-
-        List<UrlRankingTO> top10Urls = urlCountMap.entrySet().stream()
-                .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
-                .limit(10)
-                .map(entry -> new UrlRankingTO(entry.getKey(), entry.getValue().intValue()))
-                .toList();
-
-		if (top10Urls.isEmpty()) {
+		if (urlRankingTOs.isEmpty()) {
             throw new NoUrlViewException("No url fetched");
         }
-        return new ArrayList<>(top10Urls);
+        return urlRankingTOs;
     }
 
-    public String generateShortUrl(String originalUrl) {
+    public String generateShortUrl(final String originalUrl) {
         String shortUrl;
         do {
             shortUrl = generateHash(originalUrl + UUID.randomUUID()).substring(0, 6);
         } while (urlRepository.findByUrlShort(shortUrl) != null);
-        return "https://" + shortUrl.toLowerCase() + ".com";
+        return https + shortUrl.toLowerCase() + ".com";
     }
 
-    private String generateHash(String input) {
+    private String generateHash(final String input) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
@@ -89,7 +80,7 @@ public class UrlService {
         }
     }
 
-    private void validateUrl(String url) {
+    private void validateUrl(final String url) {
         if (url == null || url.isBlank()) {
             throw new UrlNullException("URL null");
         }
@@ -98,9 +89,9 @@ public class UrlService {
         }
     }
 
-    private String addHttps(String url) {
-        if (!url.startsWith("http://") && !url.startsWith("https://")) {
-            return "https://" + url;
+    private String addHttps(final String url) {
+        if (!url.startsWith(http) && !url.startsWith(https)) {
+            return https + url;
         }
         return url;
     }
