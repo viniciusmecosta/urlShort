@@ -42,8 +42,8 @@ class UrlServiceTest {
         when(urlRepository.findByUrlOriginal(urlOriginal)).thenReturn(existingUrl);
 
 
-        assertEquals(existingUrl.getUrlOriginal(),urlOriginal);
-        assertEquals(existingUrl.getUrlShort(),urlShort);
+        assertEquals(urlOriginal, existingUrl.getUrlOriginal());
+        assertEquals(urlShort, existingUrl.getUrlShort());
         verify(urlRepository, never()).save(any());
     }
 
@@ -73,20 +73,21 @@ class UrlServiceTest {
 
     @Test
     void ranking_shouldReturnTop10Urls() {
-        List<UrlView> urlViews = List.of(
-                new UrlView("url1", "date1"),
-                new UrlView("url1", "date2"),
-                new UrlView("url2", "date3"),
-                new UrlView("url3", "date4")
+        List<UrlRankingTO> urlRankingTOS = List.of(
+                new UrlRankingTO("url1", 5L),
+                new UrlRankingTO("url1", 6L),
+                new UrlRankingTO("url2", 9L),
+                new UrlRankingTO("url3", 1L)
         );
 
-        when(urlViewRepository.findAll()).thenReturn(urlViews);
+        when(urlViewRepository.findRankingUrlView()).thenReturn(urlRankingTOS);
 
         List<UrlRankingTO> ranking = urlService.ranking();
 
-        assertEquals(3, ranking.size());
-        assertEquals("url1", ranking.get(0).getUrl());
-        assertEquals(2, ranking.get(0).getCount());
+        assertEquals(4, ranking.size());
+        assertEquals("url3", ranking.get(3).url());
+        assertEquals(5L, ranking.get(0).count() );
+
     }
 
     @Test
