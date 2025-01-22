@@ -1,13 +1,8 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
 
 @Entity
-@Table
-@Setter
-@Getter
-@Builder
 public class Url {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
