@@ -8,7 +8,6 @@ import lombok.*;
 @Getter
 @Setter
 @NoArgsConstructor
-
 public class UrlView {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
