@@ -11,6 +11,6 @@ import java.util.List;
 @Repository
 public interface UrlViewRepository extends JpaRepository<UrlView, Long> {
 
-    @Query("SELECT new com.example.demo.to.UrlRankingTO(uv.url, COUNT(uv)) FROM UrlView uv GROUP BY uv.url ORDER BY COUNT(uv) DESC")
+    @Query("SELECT new com.example.demo.to.UrlRankingTO(n.url, COUNT(n)) FROM UrlView n GROUP BY n.url ORDER BY COUNT(n) DESC")
     List<UrlRankingTO> findRankingUrlView();
 }
