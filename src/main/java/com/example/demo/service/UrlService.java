@@ -80,7 +80,7 @@ public class UrlService {
         }
     }
 
-    private void validateUrl(final String url) {
+    public void validateUrl(final String url) {
         if (url == null || url.isBlank()) {
             throw new UrlNullException("URL null");
         }
@@ -89,7 +89,7 @@ public class UrlService {
         }
     }
 
-    private String addHttps(final String url) {
+    public String addHttps(final String url) {
         if (!url.startsWith(http) && !url.startsWith(https)) {
             return https + url;
         }

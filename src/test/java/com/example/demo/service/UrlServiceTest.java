@@ -37,13 +37,14 @@ class UrlServiceTest {
     void shortenUrl_shouldReturnExistingUrl_whenUrlAlreadyExists() {
         String urlOriginal = "https://example.com";
         String urlShort = "https://abc123.com";
-        Url existingUrl = new Url(urlOriginal,urlShort);
+        Url existingUrl = new Url(urlOriginal, urlShort);
 
         when(urlRepository.findByUrlOriginal(urlOriginal)).thenReturn(existingUrl);
 
+        Url result = urlService.shortenUrl(urlOriginal);
 
-        assertEquals(urlOriginal, existingUrl.getUrlOriginal());
-        assertEquals(urlShort, existingUrl.getUrlShort());
+        assertEquals(urlOriginal, result.getUrlOriginal());
+        assertEquals(urlShort, result.getUrlShort());
         verify(urlRepository, never()).save(any());
     }
 
@@ -92,7 +93,7 @@ class UrlServiceTest {
 
     @Test
     void ranking_shouldThrowException_whenNoUrlViewsExist() {
-        when(urlViewRepository.findAll()).thenReturn(Collections.emptyList());
+        when(urlViewRepository.findRankingUrlView()).thenReturn(Collections.emptyList());
 
         NoUrlViewException exception = assertThrows(NoUrlViewException.class, () -> {
             urlService.ranking();
@@ -124,5 +125,43 @@ class UrlServiceTest {
             urlService.find(urlShort);
         });
         assertEquals("Url not found", exception.getMessage());
+    }
+
+    @Test
+    void validateUrl_shouldThrowException_whenUrlIsNull() {
+        assertThrows(UrlNullException.class, () -> urlService.validateUrl(null));
+    }
+
+    @Test
+    void validateUrl_shouldThrowException_whenUrlIsBlank() {
+        assertThrows(UrlNullException.class, () -> urlService.validateUrl("   "));
+    }
+
+    @Test
+    void validateUrl_shouldThrowException_whenUrlDoesNotContainDot() {
+        assertThrows(UrlInvalidException.class, () -> urlService.validateUrl("invalid-url"));
+    }
+
+    @Test
+    void validateUrl_shouldNotThrowException_whenUrlIsValid() {
+        assertDoesNotThrow(() -> urlService.validateUrl("https://example.com"));
+    }
+
+    @Test
+    void addHttps_shouldAddHttps_whenUrlDoesNotStartWithHttpOrHttps() {
+        String result = urlService.addHttps("example.com");
+        assertEquals("https://example.com", result);
+    }
+
+    @Test
+    void addHttps_shouldNotChangeUrl_whenUrlStartsWithHttp() {
+        String result = urlService.addHttps("http://example.com");
+        assertEquals("http://example.com", result);
+    }
+
+    @Test
+    void addHttps_shouldNotChangeUrl_whenUrlStartsWithHttps() {
+        String result = urlService.addHttps("https://example.com");
+        assertEquals("https://example.com", result);
     }
 }
