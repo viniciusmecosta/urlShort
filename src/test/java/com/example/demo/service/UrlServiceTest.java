@@ -6,13 +6,13 @@ import com.example.demo.exception.*;
 import com.example.demo.repository.UrlRepository;
 import com.example.demo.repository.UrlViewRepository;
 import com.example.demo.to.UrlRankingTO;
+import com.example.demo.to.UrlResponseTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.security.MessageDigest;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -42,10 +42,10 @@ class UrlServiceTest {
 
         when(urlRepository.findByUrlOriginal(urlOriginal)).thenReturn(existingUrl);
 
-        Url result = urlService.shortenUrl(urlOriginal);
+        UrlResponseTO url = urlService.shortenUrl(urlOriginal);
 
-        assertEquals(urlOriginal, result.getUrlOriginal());
-        assertEquals(urlShort, result.getUrlShort());
+        assertEquals(urlOriginal, url.urlOriginal());
+        assertEquals(urlShort, url.urlShort());
         verify(urlRepository, never()).save(any());
     }
 
@@ -53,10 +53,10 @@ class UrlServiceTest {
     void shortenUrl_shouldGenerateNewUrl_whenUrlDoesNotExist() {
         String urlOriginal = "https://example.com";
         when(urlRepository.findByUrlOriginal(urlOriginal)).thenReturn(null);
-        Url url = urlService.shortenUrl(urlOriginal);
+        UrlResponseTO url = urlService.shortenUrl(urlOriginal);
 
-        assertEquals(urlOriginal, url.getUrlOriginal());
-        assertNotNull(url.getUrlShort());
+        assertEquals(urlOriginal, url.urlOriginal());
+        assertNotNull(url.urlShort());
         verify(urlRepository).save(any(Url.class));
     }
 
@@ -161,6 +161,13 @@ class UrlServiceTest {
     void addHttps_shouldNotChangeUrl_whenUrlStartsWithHttps() {
         String result = urlService.addHttps("https://example.com");
         assertEquals("https://example.com", result);
+    }
+
+    @Test
+    void generateHash_shouldGenerateHash_whenUrlIsValid() {
+        String url = "";
+        String hash = urlService.generateHash(url);
+        System.out.println(hash);
     }
 
 }

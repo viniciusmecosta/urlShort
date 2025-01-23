@@ -18,7 +18,7 @@ public class UrlController {
     private UrlService urlService;
 
     @PostMapping("create")
-    public ResponseEntity<Url> create(@RequestParam String url) {
+    public ResponseEntity<UrlResponseTO> create(@RequestParam String url) {
         return ResponseEntity.status(HttpStatus.CREATED).body(urlService.shortenUrl(url));
     }
 

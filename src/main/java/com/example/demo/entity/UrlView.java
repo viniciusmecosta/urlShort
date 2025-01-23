@@ -1,9 +1,14 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
 @Table(name = "urlview")
+@Getter
+@Setter
+@NoArgsConstructor
+
 public class UrlView {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -13,19 +18,8 @@ public class UrlView {
 
     private String date;
 
-    public UrlView() {
-    }
-
-    public UrlView(String urlShort, String string) {
-        this.url = urlShort;
-        this.date = string;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public String getDate(){
-        return date;
+    public UrlView(String url, String date) {
+        this.url = url;
+        this.date = date;
     }
 }

@@ -26,19 +26,19 @@ public class UrlService {
         this.urlViewRepository = urlViewRepository;
     }
 
-    public Url shortenUrl(String urlReceived) {
+    public UrlResponseTO shortenUrl(String urlReceived) {
         validateUrl(urlReceived);
         urlReceived = addHttps(urlReceived);
         Url existingUrl = urlRepository.findByUrlOriginal(urlReceived);
         if (existingUrl != null) {
-            return existingUrl;
+            return new UrlResponseTO(existingUrl.getUrlOriginal(),existingUrl.getUrlShort());
         }
 
         String urlGenerated = generateShortUrl(urlReceived);
         Url url = new Url(urlReceived,urlGenerated);
         urlRepository.save(url);
-
-        return url;
+        UrlResponseTO urlResponseTO = new UrlResponseTO(url.getUrlOriginal(),url.getUrlShort());
+        return urlResponseTO;
     }
 
     public String find(String urlShort) {
