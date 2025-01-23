@@ -69,8 +69,7 @@ public class UrlService {
         } while (urlRepository.findByUrlShort(shortUrl) != null);
         return https + shortUrl.toLowerCase() + ".com";
     }
-
-    private String generateHash(final String input) {
+    public String generateHash(final String input) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(input.getBytes(StandardCharsets.UTF_8));

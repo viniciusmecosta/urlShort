@@ -12,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.security.MessageDigest;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -51,10 +52,7 @@ class UrlServiceTest {
     @Test
     void shortenUrl_shouldGenerateNewUrl_whenUrlDoesNotExist() {
         String urlOriginal = "https://example.com";
-
         when(urlRepository.findByUrlOriginal(urlOriginal)).thenReturn(null);
-        when(urlRepository.save(any(Url.class))).thenAnswer(invocation -> invocation.getArgument(0));
-
         Url url = urlService.shortenUrl(urlOriginal);
 
         assertEquals(urlOriginal, url.getUrlOriginal());
@@ -64,7 +62,7 @@ class UrlServiceTest {
 
     @Test
     void shortenUrl_shouldThrowException_whenUrlIsInvalid() {
-        String invalidUrl = "invalid-url";
+        String invalidUrl = "urlinvalid";
 
         UrlInvalidException exception = assertThrows(UrlInvalidException.class, () -> {
             urlService.shortenUrl(invalidUrl);
@@ -117,7 +115,7 @@ class UrlServiceTest {
 
     @Test
     void find_shouldThrowException_whenShortUrlDoesNotExist() {
-        String urlShort = "nonexistent.com";
+        String urlShort = "https:url.com";
 
         when(urlRepository.findByUrlShort(urlShort)).thenReturn(null);
 
@@ -139,7 +137,7 @@ class UrlServiceTest {
 
     @Test
     void validateUrl_shouldThrowException_whenUrlDoesNotContainDot() {
-        assertThrows(UrlInvalidException.class, () -> urlService.validateUrl("invalid-url"));
+        assertThrows(UrlInvalidException.class, () -> urlService.validateUrl("urlinvalid"));
     }
 
     @Test
@@ -164,4 +162,5 @@ class UrlServiceTest {
         String result = urlService.addHttps("https://example.com");
         assertEquals("https://example.com", result);
     }
+
 }
