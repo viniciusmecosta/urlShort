@@ -7,6 +7,7 @@ import com.example.demo.exception.UrlNotFoundException;
 import com.example.demo.exception.UrlNullException;
 import com.example.demo.to.UrlRankingTO;
 import com.example.demo.service.UrlService;
+import com.example.demo.to.UrlResponseTO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -33,7 +34,7 @@ class UrlControllerTest {
     void create_Returns201WithShortenedUrl() throws Exception {
         String originalUrl = "https://example.com";
         String shortUrl = "https://abc123.com";
-        Url url = new Url(originalUrl, shortUrl);
+        UrlResponseTO url = new UrlResponseTO(originalUrl, shortUrl);
 
         when(urlService.shortenUrl(originalUrl)).thenReturn(url);
 
